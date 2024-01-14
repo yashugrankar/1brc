@@ -21,12 +21,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.stream.Collector;
 
 public class CalculateAverage_yashugrankar {
 
     private static final String FILE = "./measurements.txt";
+
+    private static Measurement parseMeasurement(String mEntry) {
+        StringTokenizer st = new StringTokenizer(mEntry, ";");
+        String city = st.nextToken();
+        String temperature = st.nextToken();
+        return new Measurement(new String[]{city, temperature});
+    }
 
     private static record Measurement(String station, double value) {
         private Measurement(String[] parts) {
@@ -83,7 +91,7 @@ public class CalculateAverage_yashugrankar {
                 });
 
         Map<String, ResultRow> measurements = new TreeMap<>(Files.lines(Paths.get(FILE))
-                .map(l -> new Measurement(l.split(";")))
+                .map(CalculateAverage_yashugrankar::parseMeasurement)
                 .collect(groupingBy(m -> m.station(), collector)));
 
         System.out.println(measurements);
